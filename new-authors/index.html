@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Author Snapshot — New Authors — The Invisible Pen</title>
+<style>
+  :root {
+    --ink: #2b2233;
+    --plum: #6b4226;
+    --accent: #4e7a6a;
+    --accent-dark: #3c6154;
+    --cream: #f5f8f4;
+    --card: #ffffff;
+    --line: #dde5dc;
+    --error: #b3402f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    background: var(--cream);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 32px 20px 80px; }
+  header { text-align: center; margin-bottom: 8px; }
+  header h1 { font-size: 2rem; margin: 0 0 4px; letter-spacing: 0.5px; }
+  header .sub { font-style: italic; color: var(--accent-dark); margin-bottom: 24px; }
+  .intro {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 28px;
+    font-size: 1.02rem;
+  }
+  .section {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .section h2 { font-size: 1.15rem; margin: 0 0 4px; color: var(--accent-dark); }
+  .section .hint { font-size: 0.92rem; color: #66705f; margin: 0 0 16px; font-style: italic; }
+  label.field-label { display: block; font-weight: bold; margin: 16px 0 6px; font-size: 0.98rem; }
+  label.field-label:first-of-type { margin-top: 0; }
+  .req { color: var(--error); }
+  input[type="text"], input[type="email"], textarea, select {
+    width: 100%;
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: 1rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fdfffc;
+    color: var(--ink);
+  }
+  textarea { min-height: 96px; resize: vertical; }
+  input:focus, textarea:focus, select:focus { outline: 2px solid var(--accent); border-color: var(--accent); }
+  .choices { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+  .choices.inline { flex-direction: row; flex-wrap: wrap; gap: 10px 18px; }
+  .choice { display: flex; align-items: flex-start; gap: 8px; font-size: 0.98rem; cursor: pointer; }
+  .choice input { margin-top: 4px; cursor: pointer; }
+  .btn {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 14px 34px;
+    font-family: inherit;
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .btn:hover { background: var(--accent-dark); }
+  .btn.secondary {
+    background: transparent;
+    color: var(--accent-dark);
+    border: 2px solid var(--accent);
+    padding: 12px 28px;
+  }
+  .btn.secondary:hover { background: #ecf3ee; }
+  .submit-row { text-align: center; margin-top: 28px; }
+  .error-msg { color: var(--error); font-size: 0.9rem; display: none; margin-top: 4px; }
+  #output-panel {
+    display: none;
+    background: var(--card);
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 28px;
+  }
+  #output-panel h2 { margin-top: 0; color: var(--accent-dark); }
+  #summary-box {
+    width: 100%;
+    min-height: 260px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.88rem;
+    white-space: pre-wrap;
+    background: #fdfffc;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .output-actions { display: flex; gap: 12px; flex-wrap: wrap; margin-top: 16px; justify-content: center; }
+  .copied-note { display: none; text-align: center; color: var(--accent-dark); font-weight: bold; margin-top: 10px; }
+  footer { text-align: center; font-size: 0.85rem; color: #7d8a7a; margin-top: 40px; font-style: italic; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Author Snapshot</h1>
+    <div class="sub">The Invisible Pen &middot; 1:1 Coaching for Newer Authors</div>
+  </header>
+
+  <div class="intro">
+    <strong>Welcome aboard.</strong> Before our first session, I need the real picture of where you are and what you're writing — not the impressive version, the true one. There are no wrong answers here. This takes about 10 minutes, and when you hit the button at the bottom, your answers get bundled up for you to send to me. Nothing here is stored anywhere; it goes straight from you to me.
+  </div>
+
+  <form id="snapshot-form" novalidate>
+
+    <div class="section">
+      <h2>The Basics</h2>
+      <p class="hint">Who you are and where to reach you.</p>
+
+      <label class="field-label" for="name">Your name <span class="req">*</span></label>
+      <input type="text" id="name" name="name" required>
+      <div class="error-msg" id="err-name">I need your name, friend.</div>
+
+      <label class="field-label" for="email">Email <span class="req">*</span></label>
+      <input type="email" id="email" name="email" required>
+      <div class="error-msg" id="err-email">A real email, please — it's how I reach you.</div>
+
+      <label class="field-label" for="pubstatus">Where are you in your publishing journey? <span class="req">*</span></label>
+      <div class="choices" id="pubstatus-group">
+        <label class="choice"><input type="radio" name="pubstatus" value="Writing my first book"> Writing my first book</label>
+        <label class="choice"><input type="radio" name="pubstatus" value="First book done, not yet published"> First book finished, not yet published</label>
+        <label class="choice"><input type="radio" name="pubstatus" value="1-2 books published"> 1&ndash;2 books published</label>
+        <label class="choice"><input type="radio" name="pubstatus" value="A few books out, still finding my footing"> A few books out, still finding my footing</label>
+      </div>
+      <div class="error-msg" id="err-pubstatus">Pick the closest one — no wrong answers.</div>
+    </div>
+
+    <div class="section">
+      <h2>Your Book</h2>
+      <p class="hint">The story we'll be building your system around.</p>
+
+      <label class="field-label" for="project">What are you writing? Genre, premise, where you are in it. <span class="req">*</span></label>
+      <textarea id="project" name="project" placeholder="Example: Small-town romance, single dad and the new vet, about 20K words in and stalled at the midpoint." required></textarea>
+      <div class="error-msg" id="err-project">Tell me about your book — it's the whole reason we're here.</div>
+
+      <label class="field-label" for="stuck">Where are you stuck — or what's the hardest part of writing for you right now?</label>
+      <textarea id="stuck" name="stuck" placeholder="Starting? Finishing? The middle? Dialogue? Finding time? All of it?"></textarea>
+
+      <label class="field-label" for="influences">Which 2&ndash;3 authors do you want your books shelved next to — and what do you love about how they write? <span class="req">*</span></label>
+      <textarea id="influences" name="influences" placeholder="This helps me understand the voice you're reaching for while we develop YOURS." required></textarea>
+      <div class="error-msg" id="err-influences">Name a few — this is our starting compass for your voice.</div>
+    </div>
+
+    <div class="section">
+      <h2>How You Like to Work</h2>
+      <p class="hint">Honest, not impressive. If you don't know yet, that's a fine answer.</p>
+
+      <label class="field-label">Plotter, pantser, or somewhere in between? <span class="req">*</span></label>
+      <div class="choices" id="plotting-group">
+        <label class="choice"><input type="radio" name="plotting" value="Plotter — detailed outline before drafting"> Plotter — I want an outline before I draft</label>
+        <label class="choice"><input type="radio" name="plotting" value="Pantser — discover the story as I write"> Pantser — I discover the story as I write</label>
+        <label class="choice"><input type="radio" name="plotting" value="Plantser — loose roadmap, improvise inside it"> Plantser — loose roadmap, improvise inside it</label>
+        <label class="choice"><input type="radio" name="plotting" value="No idea yet — still figuring out my process"> Honestly? No idea yet — that's part of why I'm here</label>
+      </div>
+      <div class="error-msg" id="err-plotting">Pick the closest one.</div>
+
+      <label class="field-label">Where do you write? (check all that apply)</label>
+      <div class="choices inline">
+        <label class="choice"><input type="checkbox" name="tools" value="Microsoft Word"> Word</label>
+        <label class="choice"><input type="checkbox" name="tools" value="Google Docs"> Google Docs</label>
+        <label class="choice"><input type="checkbox" name="tools" value="Scrivener"> Scrivener</label>
+        <label class="choice"><input type="checkbox" name="tools" value="Notebook / longhand"> Notebook / longhand</label>
+        <label class="choice"><input type="checkbox" name="tools" value="Other"> Other</label>
+      </div>
+      <label class="field-label" for="toolsother">If "Other" — what?</label>
+      <input type="text" id="toolsother" name="toolsother">
+
+      <label class="field-label" for="schedule">What does a normal writing week look like for you right now?</label>
+      <textarea id="schedule" name="schedule" placeholder="Stolen lunch hours? Early mornings? Weekends only? 'What writing week' is also a valid answer."></textarea>
+    </div>
+
+    <div class="section">
+      <h2>You and AI So Far</h2>
+      <p class="hint">Whatever your experience is — including none — I need the truth of it.</p>
+
+      <label class="field-label">Do you have a paid Claude account? <span class="req">*</span></label>
+      <div class="choices" id="claude-group">
+        <label class="choice"><input type="radio" name="claude" value="Yes — paid plan"> Yes — I'm on a paid plan</label>
+        <label class="choice"><input type="radio" name="claude" value="Free tier only"> I've only used the free version</label>
+        <label class="choice"><input type="radio" name="claude" value="Not yet"> Not yet — I'll set it up before Session 1</label>
+      </div>
+      <div class="error-msg" id="err-claude">I need to know where you're starting from.</div>
+
+      <label class="field-label" for="aihistory">Have you tried writing with AI before? What happened? <span class="req">*</span></label>
+      <textarea id="aihistory" name="aihistory" placeholder="Tools you've tried, what worked, what flopped, what scared you off. 'Never touched it' is a perfectly good answer." required></textarea>
+      <div class="error-msg" id="err-aihistory">Even "never tried it" counts — just tell me.</div>
+
+      <label class="field-label" for="techcomfort">How comfortable are you with technology in general?</label>
+      <textarea id="techcomfort" name="techcomfort" placeholder="Be honest — I'm not technical either, and I calibrate how I teach to how you learn."></textarea>
+    </div>
+
+    <div class="section">
+      <h2>Where We're Going</h2>
+
+      <label class="field-label" for="success">Ninety days from now, what does success look like? <span class="req">*</span></label>
+      <textarea id="success" name="success" placeholder="Be specific. 'First draft finished'? 'A planning system I trust'? 'Writing 5x faster without losing myself'?" required></textarea>
+      <div class="error-msg" id="err-success">If we don't name the target, we can't hit it.</div>
+
+      <label class="field-label" for="anything">Anything else I should know before Session 1?</label>
+      <textarea id="anything" name="anything" placeholder="Health stuff, schedule limits, a deadline, a dream you haven't said out loud — whatever matters."></textarea>
+    </div>
+
+    <div class="submit-row">
+      <button type="submit" class="btn">Bundle Up My Answers</button>
+    </div>
+  </form>
+
+  <div id="output-panel">
+    <h2>Almost done — send this to Jessica</h2>
+    <p>Your answers are below. Hit <strong>Copy</strong>, then <strong>Email Jessica</strong> — it opens a pre-addressed email. Paste your answers into the body and send. Done.</p>
+    <textarea id="summary-box" readonly></textarea>
+    <div class="output-actions">
+      <button class="btn" id="copy-btn" type="button">Copy My Answers</button>
+      <a class="btn secondary" id="mailto-btn" href="#">Email Jessica</a>
+    </div>
+    <div class="copied-note" id="copied-note">Copied! Now hit "Email Jessica" and paste.</div>
+  </div>
+
+  <footer>The Invisible Pen &middot; Clark Publishing House &middot; Your answers are not stored on this page or anywhere else — they exist only in the email you send.</footer>
+</div>
+
+<script>
+(function () {
+  var form = document.getElementById('snapshot-form');
+  var JESSICA_EMAIL = 'clarkpublishinghouse@gmail.com';
+
+  function val(id) { return (document.getElementById(id).value || '').trim(); }
+  function radioVal(name) {
+    var r = document.querySelector('input[name="' + name + '"]:checked');
+    return r ? r.value : '';
+  }
+  function checkVals(name) {
+    var boxes = document.querySelectorAll('input[name="' + name + '"]:checked');
+    return Array.prototype.map.call(boxes, function (b) { return b.value; }).join(', ');
+  }
+  function showErr(id, show) {
+    document.getElementById(id).style.display = show ? 'block' : 'none';
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var ok = true;
+
+    var required = [
+      ['name', 'err-name'],
+      ['email', 'err-email'],
+      ['project', 'err-project'],
+      ['influences', 'err-influences'],
+      ['aihistory', 'err-aihistory'],
+      ['success', 'err-success']
+    ];
+    required.forEach(function (pair) {
+      var bad = !val(pair[0]);
+      showErr(pair[1], bad);
+      if (bad) ok = false;
+    });
+
+    var pubBad = !radioVal('pubstatus');
+    showErr('err-pubstatus', pubBad);
+    if (pubBad) ok = false;
+
+    var plotBad = !radioVal('plotting');
+    showErr('err-plotting', plotBad);
+    if (plotBad) ok = false;
+
+    var claudeBad = !radioVal('claude');
+    showErr('err-claude', claudeBad);
+    if (claudeBad) ok = false;
+
+    if (!ok) {
+      var firstErr = document.querySelector('.error-msg[style*="block"]');
+      if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    var tools = checkVals('tools');
+    if (val('toolsother')) tools += (tools ? ', ' : '') + 'Other: ' + val('toolsother');
+
+    var lines = [
+      'AUTHOR SNAPSHOT (NEWER AUTHOR) — ' + val('name'),
+      'Submitted: ' + new Date().toLocaleDateString(),
+      '',
+      '— THE BASICS —',
+      'Name: ' + val('name'),
+      'Email: ' + val('email'),
+      'Publishing stage: ' + radioVal('pubstatus'),
+      '',
+      '— MY BOOK —',
+      'Project: ' + val('project'),
+      'Where I\'m stuck / hardest part: ' + (val('stuck') || '(not answered)'),
+      'Shelf-neighbor authors & why: ' + val('influences'),
+      '',
+      '— HOW I WORK —',
+      'Plotting style: ' + radioVal('plotting'),
+      'Writing tools: ' + (tools || '(not answered)'),
+      'Normal writing week: ' + (val('schedule') || '(not answered)'),
+      '',
+      '— AI SO FAR —',
+      'Claude account: ' + radioVal('claude'),
+      'AI history: ' + val('aihistory'),
+      'Tech comfort: ' + (val('techcomfort') || '(not answered)'),
+      '',
+      '— WHERE WE\'RE GOING —',
+      '90-day success: ' + val('success'),
+      'Anything else: ' + (val('anything') || '(nothing noted)')
+    ];
+
+    var summary = lines.join('\n');
+    document.getElementById('summary-box').value = summary;
+    document.getElementById('output-panel').style.display = 'block';
+
+    var subject = encodeURIComponent('Author Snapshot (Newer Author) — ' + val('name'));
+    var body = encodeURIComponent('Hi Jessica — my snapshot answers are pasted below.\n\n\n');
+    document.getElementById('mailto-btn').href =
+      'mailto:' + JESSICA_EMAIL + '?subject=' + subject + '&body=' + body;
+
+    document.getElementById('output-panel').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  document.getElementById('copy-btn').addEventListener('click', function () {
+    var box = document.getElementById('summary-box');
+    box.select();
+    box.setSelectionRange(0, 99999);
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(box.value);
+      } else {
+        document.execCommand('copy');
+      }
+      document.getElementById('copied-note').style.display = 'block';
+    } catch (err) {
+      alert('Select the text and copy it manually (Ctrl+C / Cmd+C).');
+    }
+  });
+})();
+</script>
+</body>
+</html>
