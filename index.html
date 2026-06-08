@@ -1,0 +1,398 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Author Snapshot — The Invisible Pen</title>
+<style>
+  :root {
+    --ink: #2b2233;
+    --plum: #6b4226;
+    --accent: #8b5e83;
+    --accent-dark: #6f4868;
+    --cream: #faf6f1;
+    --card: #ffffff;
+    --line: #e5dcd2;
+    --error: #b3402f;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: Georgia, 'Times New Roman', serif;
+    background: var(--cream);
+    color: var(--ink);
+    line-height: 1.6;
+  }
+  .wrap { max-width: 720px; margin: 0 auto; padding: 32px 20px 80px; }
+  header { text-align: center; margin-bottom: 8px; }
+  header h1 {
+    font-size: 2rem;
+    margin: 0 0 4px;
+    letter-spacing: 0.5px;
+  }
+  header .sub {
+    font-style: italic;
+    color: var(--accent-dark);
+    margin-bottom: 24px;
+  }
+  .intro {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 28px;
+    font-size: 1.02rem;
+  }
+  .section {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 20px;
+  }
+  .section h2 {
+    font-size: 1.15rem;
+    margin: 0 0 4px;
+    color: var(--accent-dark);
+  }
+  .section .hint {
+    font-size: 0.92rem;
+    color: #6f6377;
+    margin: 0 0 16px;
+    font-style: italic;
+  }
+  label.field-label {
+    display: block;
+    font-weight: bold;
+    margin: 16px 0 6px;
+    font-size: 0.98rem;
+  }
+  label.field-label:first-of-type { margin-top: 0; }
+  .req { color: var(--error); }
+  input[type="text"], input[type="email"], textarea, select {
+    width: 100%;
+    padding: 10px 12px;
+    font-family: inherit;
+    font-size: 1rem;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #fffdfa;
+    color: var(--ink);
+  }
+  textarea { min-height: 96px; resize: vertical; }
+  input:focus, textarea:focus, select:focus {
+    outline: 2px solid var(--accent);
+    border-color: var(--accent);
+  }
+  .choices { display: flex; flex-direction: column; gap: 8px; margin-top: 6px; }
+  .choices.inline { flex-direction: row; flex-wrap: wrap; gap: 10px 18px; }
+  .choice {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 0.98rem; cursor: pointer;
+  }
+  .choice input { margin-top: 4px; cursor: pointer; }
+  .btn {
+    display: inline-block;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    border-radius: 999px;
+    padding: 14px 34px;
+    font-family: inherit;
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: background 0.15s ease;
+  }
+  .btn:hover { background: var(--accent-dark); }
+  .btn.secondary {
+    background: transparent;
+    color: var(--accent-dark);
+    border: 2px solid var(--accent);
+    padding: 12px 28px;
+  }
+  .btn.secondary:hover { background: #f3ebf1; }
+  .submit-row { text-align: center; margin-top: 28px; }
+  .error-msg {
+    color: var(--error);
+    font-size: 0.9rem;
+    display: none;
+    margin-top: 4px;
+  }
+  #output-panel {
+    display: none;
+    background: var(--card);
+    border: 2px solid var(--accent);
+    border-radius: 12px;
+    padding: 24px;
+    margin-top: 28px;
+  }
+  #output-panel h2 { margin-top: 0; color: var(--accent-dark); }
+  #summary-box {
+    width: 100%;
+    min-height: 260px;
+    font-family: 'Courier New', monospace;
+    font-size: 0.88rem;
+    white-space: pre-wrap;
+    background: #fffdfa;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .output-actions {
+    display: flex; gap: 12px; flex-wrap: wrap;
+    margin-top: 16px; justify-content: center;
+  }
+  .copied-note {
+    display: none;
+    text-align: center;
+    color: var(--accent-dark);
+    font-weight: bold;
+    margin-top: 10px;
+  }
+  footer {
+    text-align: center;
+    font-size: 0.85rem;
+    color: #8a7d92;
+    margin-top: 40px;
+    font-style: italic;
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Author Snapshot</h1>
+    <div class="sub">The Invisible Pen &middot; 1:1 Voice Calibration Coaching</div>
+  </header>
+
+  <div class="intro">
+    <strong>Welcome aboard.</strong> Before our first session, I need the real picture of how you write — not the impressive version, the true one. This takes about 10 minutes. When you hit the button at the bottom, your answers get bundled up for you to send to me. Nothing here is stored anywhere; it goes straight from you to me.
+  </div>
+
+  <form id="snapshot-form" novalidate>
+
+    <div class="section">
+      <h2>The Basics</h2>
+      <p class="hint">Who you are and where to reach you.</p>
+
+      <label class="field-label" for="name">Your name <span class="req">*</span></label>
+      <input type="text" id="name" name="name" required>
+      <div class="error-msg" id="err-name">I need your name, friend.</div>
+
+      <label class="field-label" for="email">Email <span class="req">*</span></label>
+      <input type="email" id="email" name="email" required>
+      <div class="error-msg" id="err-email">A real email, please — it's how I reach you.</div>
+
+      <label class="field-label" for="pennames">Pen name(s), with genre and heat level for each <span class="req">*</span></label>
+      <textarea id="pennames" name="pennames" placeholder="Example: Jane Doe — small-town romance, heat 3. J.D. Knight — romantic suspense, heat 4." required></textarea>
+      <div class="error-msg" id="err-pennames">Tell me your pen name(s) — this is what we're calibrating.</div>
+
+      <label class="field-label" for="bookcount">Roughly how many books have you published?</label>
+      <input type="text" id="bookcount" name="bookcount" placeholder="Example: 14 across two pen names">
+    </div>
+
+    <div class="section">
+      <h2>Your Voice Books</h2>
+      <p class="hint">The 2&ndash;3 published books that sound the MOST like you. Not your bestsellers — your truest.</p>
+
+      <label class="field-label" for="voicebooks">Which books did you pick, and why those? <span class="req">*</span></label>
+      <textarea id="voicebooks" name="voicebooks" placeholder="Title(s) and a sentence on why each one is the most 'you.'" required></textarea>
+      <div class="error-msg" id="err-voicebooks">This is the heart of the whole package — don't skip it.</div>
+
+      <label class="field-label" for="lovedchapter">The chapter you LOVE — which book, which chapter, what's firing in it?</label>
+      <textarea id="lovedchapter" name="lovedchapter"></textarea>
+
+      <label class="field-label" for="foughtchapter">The chapter that FOUGHT you — which one, and what went wrong?</label>
+      <textarea id="foughtchapter" name="foughtchapter"></textarea>
+    </div>
+
+    <div class="section">
+      <h2>How You Actually Work</h2>
+      <p class="hint">Honest, not impressive. I can't calibrate to a process you don't use.</p>
+
+      <label class="field-label">Plotter, pantser, or somewhere in between? <span class="req">*</span></label>
+      <div class="choices" id="plotting-group">
+        <label class="choice"><input type="radio" name="plotting" value="Plotter — detailed outline before drafting"> Plotter — detailed outline before I draft</label>
+        <label class="choice"><input type="radio" name="plotting" value="Pantser — discover the story as I write"> Pantser — I discover the story as I write</label>
+        <label class="choice"><input type="radio" name="plotting" value="Plantser — loose roadmap, improvise inside it"> Plantser — loose roadmap, improvise inside it</label>
+        <label class="choice"><input type="radio" name="plotting" value="It varies by book"> Honestly? It varies by book</label>
+      </div>
+      <div class="error-msg" id="err-plotting">Pick the closest one.</div>
+
+      <label class="field-label">Where do you draft and produce your books? (check all that apply)</label>
+      <div class="choices inline">
+        <label class="choice"><input type="checkbox" name="tools" value="Microsoft Word"> Word</label>
+        <label class="choice"><input type="checkbox" name="tools" value="Google Docs"> Google Docs</label>
+        <label class="choice"><input type="checkbox" name="tools" value="Scrivener"> Scrivener</label>
+        <label class="choice"><input type="checkbox" name="tools" value="Atticus"> Atticus</label>
+        <label class="choice"><input type="checkbox" name="tools" value="Vellum"> Vellum</label>
+        <label class="choice"><input type="checkbox" name="tools" value="Other"> Other</label>
+      </div>
+      <label class="field-label" for="toolsother">If "Other" — what?</label>
+      <input type="text" id="toolsother" name="toolsother">
+
+      <label class="field-label" for="schedule">What does a normal writing week look like for you?</label>
+      <textarea id="schedule" name="schedule" placeholder="Daily word counts? Weekend warrior? Deadline-fueled chaos? No judgment."></textarea>
+    </div>
+
+    <div class="section">
+      <h2>You and AI So Far</h2>
+      <p class="hint">The failures tell me where the walls are. Spill.</p>
+
+      <label class="field-label">Do you have a paid Claude account? <span class="req">*</span></label>
+      <div class="choices" id="claude-group">
+        <label class="choice"><input type="radio" name="claude" value="Yes — paid plan"> Yes — I'm on a paid plan</label>
+        <label class="choice"><input type="radio" name="claude" value="Free tier only"> I've only used the free version</label>
+        <label class="choice"><input type="radio" name="claude" value="Not yet"> Not yet — I'll set it up before Session 1</label>
+      </div>
+      <div class="error-msg" id="err-claude">I need to know where you're starting from.</div>
+
+      <label class="field-label" for="aihistory">What have you tried with AI so far — and what made you want to throw your laptop? <span class="req">*</span></label>
+      <textarea id="aihistory" name="aihistory" placeholder="Tools you've tried, what worked, what flopped, what flattened your voice." required></textarea>
+      <div class="error-msg" id="err-aihistory">Even "nothing yet" counts — just tell me.</div>
+    </div>
+
+    <div class="section">
+      <h2>Where We're Going</h2>
+
+      <label class="field-label" for="success">Ninety days from now, what does success look like? <span class="req">*</span></label>
+      <textarea id="success" name="success" placeholder="Be specific. 'Claude drafting chapters in my voice'? 'My next book half-produced'? 'Marketing copy off my plate'?" required></textarea>
+      <div class="error-msg" id="err-success">If we don't name the target, we can't hit it.</div>
+
+      <label class="field-label" for="anything">Anything else I should know before Session 1?</label>
+      <textarea id="anything" name="anything" placeholder="Health stuff, schedule limits, a co-writer, a deadline breathing down your neck — whatever matters."></textarea>
+    </div>
+
+    <div class="submit-row">
+      <button type="submit" class="btn">Bundle Up My Answers</button>
+    </div>
+  </form>
+
+  <div id="output-panel">
+    <h2>Almost done — send this to Jessica</h2>
+    <p>Your answers are below. Hit <strong>Copy</strong>, then <strong>Email Jessica</strong> — it opens a pre-addressed email. Paste your answers into the body and send. Done.</p>
+    <textarea id="summary-box" readonly></textarea>
+    <div class="output-actions">
+      <button class="btn" id="copy-btn" type="button">Copy My Answers</button>
+      <a class="btn secondary" id="mailto-btn" href="#">Email Jessica</a>
+    </div>
+    <div class="copied-note" id="copied-note">Copied! Now hit "Email Jessica" and paste.</div>
+  </div>
+
+  <footer>The Invisible Pen &middot; Clark Publishing House &middot; Your answers are not stored on this page or anywhere else — they exist only in the email you send.</footer>
+</div>
+
+<script>
+(function () {
+  var form = document.getElementById('snapshot-form');
+  var JESSICA_EMAIL = 'clarkpublishinghouse@gmail.com';
+
+  function val(id) { return (document.getElementById(id).value || '').trim(); }
+  function radioVal(name) {
+    var r = document.querySelector('input[name="' + name + '"]:checked');
+    return r ? r.value : '';
+  }
+  function checkVals(name) {
+    var boxes = document.querySelectorAll('input[name="' + name + '"]:checked');
+    return Array.prototype.map.call(boxes, function (b) { return b.value; }).join(', ');
+  }
+  function showErr(id, show) {
+    document.getElementById(id).style.display = show ? 'block' : 'none';
+  }
+
+  form.addEventListener('submit', function (e) {
+    e.preventDefault();
+    var ok = true;
+
+    var required = [
+      ['name', 'err-name'],
+      ['email', 'err-email'],
+      ['pennames', 'err-pennames'],
+      ['voicebooks', 'err-voicebooks'],
+      ['aihistory', 'err-aihistory'],
+      ['success', 'err-success']
+    ];
+    required.forEach(function (pair) {
+      var bad = !val(pair[0]);
+      showErr(pair[1], bad);
+      if (bad) ok = false;
+    });
+
+    var plotBad = !radioVal('plotting');
+    showErr('err-plotting', plotBad);
+    if (plotBad) ok = false;
+
+    var claudeBad = !radioVal('claude');
+    showErr('err-claude', claudeBad);
+    if (claudeBad) ok = false;
+
+    if (!ok) {
+      var firstErr = document.querySelector('.error-msg[style*="block"]');
+      if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      return;
+    }
+
+    var tools = checkVals('tools');
+    if (val('toolsother')) tools += (tools ? ', ' : '') + 'Other: ' + val('toolsother');
+
+    var lines = [
+      'AUTHOR SNAPSHOT — ' + val('name'),
+      'Submitted: ' + new Date().toLocaleDateString(),
+      '',
+      '— THE BASICS —',
+      'Name: ' + val('name'),
+      'Email: ' + val('email'),
+      'Pen names / genres / heat: ' + val('pennames'),
+      'Books published: ' + (val('bookcount') || '(not answered)'),
+      '',
+      '— VOICE BOOKS —',
+      'Chosen books & why: ' + val('voicebooks'),
+      'Chapter I love: ' + (val('lovedchapter') || '(not answered)'),
+      'Chapter that fought me: ' + (val('foughtchapter') || '(not answered)'),
+      '',
+      '— HOW I WORK —',
+      'Plotting style: ' + radioVal('plotting'),
+      'Drafting/production tools: ' + (tools || '(not answered)'),
+      'Normal writing week: ' + (val('schedule') || '(not answered)'),
+      '',
+      '— AI SO FAR —',
+      'Claude account: ' + radioVal('claude'),
+      'AI history & frustrations: ' + val('aihistory'),
+      '',
+      '— WHERE WE\'RE GOING —',
+      '90-day success: ' + val('success'),
+      'Anything else: ' + (val('anything') || '(nothing noted)')
+    ];
+
+    var summary = lines.join('\n');
+    document.getElementById('summary-box').value = summary;
+    document.getElementById('output-panel').style.display = 'block';
+
+    var subject = encodeURIComponent('Author Snapshot — ' + val('name'));
+    var body = encodeURIComponent('Hi Jessica — my snapshot answers are pasted below.\n\n\n');
+    document.getElementById('mailto-btn').href =
+      'mailto:' + JESSICA_EMAIL + '?subject=' + subject + '&body=' + body;
+
+    document.getElementById('output-panel').scrollIntoView({ behavior: 'smooth' });
+  });
+
+  document.getElementById('copy-btn').addEventListener('click', function () {
+    var box = document.getElementById('summary-box');
+    box.select();
+    box.setSelectionRange(0, 99999);
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(box.value);
+      } else {
+        document.execCommand('copy');
+      }
+      document.getElementById('copied-note').style.display = 'block';
+    } catch (err) {
+      alert('Select the text and copy it manually (Ctrl+C / Cmd+C).');
+    }
+  });
+})();
+</script>
+</body>
+</html>
