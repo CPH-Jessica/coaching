@@ -5,120 +5,33 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Reverse Planner — TIP Student Tool</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="description" content="Unlisted student tool. Dump a stalled draft, review extracted answers, lock Phase 1, hand the packet to the CPH planner.">
+<meta name="description" content="Unlisted student tool. Dump a stalled draft, review extracted answers, lock Phase 1.">
 <style>
-  :root { --ink:#231f1c; --paper:#faf6f0; --card:#fffdf9; --line:#e6d9c8; --red:#8f1d22; --red-dk:#6e1519; --gold:#b08d57; --soft:#6b645a; --green:#3e7a5e; --ok:#e4f0ea; --warn:#fbeaea; --jess:#eef2f8; --code:#221f1e; --navy:#1c2430; }
-  * { box-sizing:border-box; margin:0; padding:0; }
-  body { font-family: Georgia, "Times New Roman", serif; background:var(--paper); color:var(--ink); line-height:1.5; }
-  header { background:linear-gradient(135deg,#1c1a19,#3a1113); color:#fff; padding:28px 22px 18px; }
-  header .k { font-family:"Segoe UI",sans-serif; font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:#d9c9b8; }
-  header h1 { font-weight:normal; font-style:italic; font-size:28px; margin:8px 0 6px; }
-  header p { color:#d9c9b8; max-width:760px; }
-  .banner { background:var(--red); color:#fff; padding:11px 16px; font-family:"Segoe UI",sans-serif; font-weight:600; text-align:center; font-size:14px; }
-  .wrap { max-width:1180px; margin:0 auto; padding:18px 16px 64px; display:grid; grid-template-columns:210px 1fr 280px; gap:16px; align-items:start; }
-  nav.st { position:sticky; top:12px; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px 8px; }
-  nav.st h2 { font-family:"Segoe UI",sans-serif; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--soft); margin:2px 8px 8px; }
-  .sbtn { display:flex; gap:8px; width:100%; text-align:left; border:0; background:transparent; color:var(--ink); padding:8px 10px; border-radius:8px; cursor:pointer; font:14px/1.3 Georgia,serif; }
-  .sbtn .n { font-family:"Segoe UI",sans-serif; font-size:11px; color:var(--gold); min-width:22px; }
-  .sbtn.on { background:var(--red-dk); color:#fff; }
-  .sbtn.on .n { color:#e8c98a; }
-  main.panel { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px 22px 16px; min-height:640px; }
-  .station { display:none; }
-  .station.on { display:block; }
-  h3 { font-size:22px; color:var(--red-dk); font-weight:normal; font-style:italic; margin:0 0 8px; }
-  h4 { font-size:16px; margin:8px 0; }
-  .why { margin:0 0 16px; color:var(--ink); max-width:68ch; }
-  .q { margin:0 0 16px; padding-bottom:14px; border-bottom:1px solid var(--line); }
-  .q:last-of-type { border-bottom:0; }
-  .ql { display:block; font-family:"Segoe UI",sans-serif; font-size:14px; font-weight:700; margin-bottom:4px; }
-  .hint { font-size:13.5px; color:var(--soft); margin:0 0 8px; max-width:70ch; }
-  input[type=text], textarea, select { width:100%; border:1px solid var(--line); background:#fff; border-radius:8px; padding:9px 11px; font:15px/1.4 Georgia,serif; color:var(--ink); }
-  textarea { min-height:78px; resize:vertical; }
-  input:focus, textarea:focus, select:focus { outline:2px solid #e8c98a; border-color:var(--gold); }
-  .row2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
-  .choices { display:flex; flex-wrap:wrap; gap:7px; }
-  .chip { border:1px solid var(--line); background:#fff; border-radius:999px; padding:6px 11px; cursor:pointer; font-family:"Segoe UI",sans-serif; font-size:13px; }
-  .chip.on { background:var(--ink); color:#fff; border-color:var(--ink); }
-  .chip input { display:none; }
-  .ch { border:1px solid var(--line); background:#faf6f0; border-radius:10px; padding:12px; margin-bottom:10px; }
-  .ch h4 { margin:0 0 8px; font-size:15px; }
-  .verdicts { display:flex; gap:6px; flex-wrap:wrap; margin-top:8px; }
-  .ver { font-family:"Segoe UI",sans-serif; font-size:12px; border:1px solid var(--line); background:#fff; border-radius:999px; padding:3px 9px; cursor:pointer; color:var(--soft); }
-  .ver.on.keep { background:var(--green); color:#fff; border-color:var(--green); }
-  .ver.on.salvage { background:var(--gold); color:#fff; border-color:var(--gold); }
-  .ver.on.cut { background:var(--red); color:#fff; border-color:var(--red); }
-  .ver.on.unsure { background:#4a5563; color:#fff; border-color:#4a5563; }
-  .warn { background:var(--warn); border-left:4px solid var(--red); padding:11px 13px; border-radius:0 8px 8px 0; margin:10px 0; }
-  .ok { background:var(--ok); border-left:4px solid var(--green); padding:11px 13px; border-radius:0 8px 8px 0; margin:10px 0; }
-  .jess { background:var(--jess); border-left:4px solid #3d5a80; padding:11px 13px; border-radius:0 8px 8px 0; margin:10px 0; }
-  .phase { display:grid; grid-template-columns:78px 1fr; gap:8px; border:1px solid var(--line); border-radius:8px; padding:8px 10px; margin:6px 0; background:#faf6f0; font-size:14.5px; }
-  .phase b { font-family:"Segoe UI",sans-serif; font-size:11px; letter-spacing:.08em; text-transform:uppercase; color:var(--gold); }
-  .navrow { display:flex; justify-content:space-between; margin-top:8px; padding-top:14px; border-top:1px solid var(--line); }
-  .btn { border:0; border-radius:999px; padding:9px 16px; cursor:pointer; font-family:"Segoe UI",sans-serif; font-weight:700; font-size:13.5px; }
-  .btn.ghost { background:#fff; color:var(--ink); border:1px solid var(--line); }
-  .btn.gold { background:var(--red-dk); color:#fff; }
-  .btn.softgold { background:var(--gold); color:#1c1a19; }
-  .btn:disabled { opacity:.45; cursor:not-allowed; }
-  aside.snap { position:sticky; top:12px; background:var(--navy); color:#f3ece2; border-radius:14px; padding:16px; }
-  aside.snap h2 { font-style:italic; font-weight:normal; font-size:20px; margin:0 0 2px; color:#fff; }
-  aside.snap .sub { font-family:"Segoe UI",sans-serif; font-size:11px; color:#c9b8a4; margin-bottom:12px; }
-  .sb { margin:0 0 12px; padding-bottom:10px; border-bottom:1px solid rgba(232,201,138,.18); }
-  .sb h3 { font-family:"Segoe UI",sans-serif; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold); margin:0 0 3px; font-style:normal; }
-  .sb p { margin:0; font-size:13.5px; color:#f3ece2; }
-  .sb p.empty { color:#8b8490; font-style:italic; }
-  .tools { display:grid; gap:7px; margin-top:12px; }
-  .tools .btn { width:100%; background:var(--gold); color:#1c1a19; }
-  .tools .btn.soft { background:transparent; color:#e8c98a; border:1px solid rgba(232,201,138,.35); }
-  pre.packet { white-space:pre-wrap; background:var(--code); color:#f3ece2; border-radius:10px; padding:14px; font-family:Consolas,Menlo,monospace; font-size:12px; line-height:1.45; max-height:520px; overflow:auto; }
-  .diag { background:#1c1a19; color:#f3ece2; border-radius:10px; padding:14px; margin:8px 0 14px; }
-  .diag h4 { font-family:"Segoe UI",sans-serif; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--gold); margin:0 0 6px; }
-  .barwrap { margin-top:10px; font-family:"Segoe UI",sans-serif; font-size:11px; color:#d9c9b8; }
-  .bar { height:7px; background:#4a2a2a; border-radius:99px; overflow:hidden; margin-top:5px; max-width:240px; }
-  .bar span { display:block; height:100%; width:0; background:var(--gold); }
-  footer { text-align:center; color:#8a7f74; font-size:13px; padding:8px 16px 24px; font-family:"Segoe UI",sans-serif; }
-  .drop { border:2px dashed var(--line); border-radius:12px; padding:22px 16px; text-align:center; background:#faf6f0; cursor:pointer; margin:0 0 12px; }
-  .drop.over { border-color:var(--gold); background:#fff8ec; }
-  .drop b { display:block; font-family:"Segoe UI",sans-serif; margin-bottom:4px; }
-  .drop input { display:none; }
-  .filechip { display:flex; align-items:center; gap:8px; border:1px solid var(--line); background:#fff; border-radius:10px; padding:8px 10px; margin:0 0 8px; font-family:"Segoe UI",sans-serif; font-size:13px; }
-  .filechip .meta { flex:1; min-width:0; }
-  .filechip .name { font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
-  .filechip .wc { color:var(--soft); font-size:12px; }
-  .filechip select { width:auto; padding:4px 8px; font-size:12px; font-family:"Segoe UI",sans-serif; }
-  .filechip .x { border:0; background:transparent; color:var(--red); cursor:pointer; font-size:16px; padding:0 4px; }
-  .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:12px 0; }
-  .stat { background:#faf6f0; border:1px solid var(--line); border-radius:8px; padding:8px 10px; }
-  .stat b { display:block; font-family:"Segoe UI",sans-serif; font-size:18px; color:var(--red-dk); }
-  .stat span { font-family:"Segoe UI",sans-serif; font-size:11px; color:var(--soft); text-transform:uppercase; letter-spacing:.06em; }
-  .prop { border:1px solid var(--line); border-radius:10px; padding:12px; margin:0 0 10px; background:#fff; }
-  .prop.agreed { background:var(--ok); border-color:#b7d4c6; }
-  .prop.disagreed { opacity:.5; background:#f4f0ea; }
-  .prop-head { display:flex; justify-content:space-between; gap:8px; align-items:flex-start; margin-bottom:6px; }
-  .prop-q { font-family:"Segoe UI",sans-serif; font-weight:700; font-size:13.5px; }
-  .pill { font-family:"Segoe UI",sans-serif; font-size:10px; letter-spacing:.06em; text-transform:uppercase; border-radius:999px; padding:3px 8px; white-space:nowrap; }
-  .pill.high { background:var(--green); color:#fff; }
-  .pill.medium { background:var(--gold); color:#1c1a19; }
-  .pill.low { background:#c4b8a8; color:#1c1a19; }
-  .prop-ev { font-size:13px; color:var(--soft); font-style:italic; margin:6px 0 8px; }
-  .prop-acts { display:flex; flex-wrap:wrap; gap:6px; }
-  .prop textarea { min-height:64px; }
-  .filt { display:flex; gap:6px; flex-wrap:wrap; margin:0 0 12px; }
-  details.more { margin:14px 0; border:1px solid var(--line); border-radius:10px; padding:10px 12px; background:#faf6f0; }
-  details.more summary { cursor:pointer; font-family:"Segoe UI",sans-serif; font-weight:700; }
-  .actrow { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; }
-  @media (max-width:1040px) {
-    .wrap { grid-template-columns:1fr; }
-    nav.st, aside.snap { position:static; }
-    .row2, .stats { grid-template-columns:1fr 1fr; }
-  }
-  @media print {
-    nav.st, .navrow, .tools, .banner, .drop, .actrow { display:none !important; }
-    .wrap { display:block; }
-    .station { display:block !important; }
-  }
+:root { --ink:#231f1c; --paper:#faf6f0; --card:#fffdf9; --line:#e6d9c8; --red:#8f1d22; --red-dk:#6e1519; --gold:#b08d57; --soft:#6b645a; --green:#3e7a5e; --ok:#e4f0ea; --warn:#fbeaea; --jess:#eef2f8; --code:#221f1e; --navy:#1c2430; }
+* { box-sizing:border-box; margin:0; padding:0; }
+body { font-family: Georgia, serif; background:var(--paper); color:var(--ink); line-height:1.5; }
+header { background:linear-gradient(135deg,#1c1a19,#3a1113); color:#fff; padding:28px 22px 18px; }
+header .k { font-family:"Segoe UI",sans-serif; font-size:11px; letter-spacing:.18em; text-transform:uppercase; color:#d9c9b8; }
+header h1 { font-weight:normal; font-style:italic; font-size:28px; margin:8px 0 6px; }
+.banner { background:var(--red); color:#fff; padding:11px 16px; font-family:"Segoe UI",sans-serif; font-weight:600; text-align:center; font-size:14px; }
+.wrap { max-width:720px; margin:0 auto; padding:24px 16px; }
+.card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px; }
+.ok { background:var(--ok); border-left:4px solid var(--green); padding:11px 13px; margin:12px 0; }
+.warn { background:var(--warn); border-left:4px solid var(--red); padding:11px 13px; margin:12px 0; }
+a { color:var(--red-dk); }
 </style>
 </head>
 <body>
-PLACEHOLDER_BODY
+<header>
+  <div class="k">The Invisible Pen · Coaching Desk</div>
+  <h1>The Reverse Planner</h1>
+  <p>Dump-and-extract build is in the single-file desk. Use the download / local copy until Pages finishes catching this version.</p>
+</header>
+<div class="banner">Do not outline from chapter 7.</div>
+<div class="wrap"><div class="card">
+  <div class="ok"><b>Student URL stays the same</b> after a hard refresh: this path, <code>coaching/reverse-planner.html</code>.</div>
+  <div class="warn">If you still see this note, hard-refresh (Ctrl/Cmd-Shift-R) or open the single-file copy from the coaching desk artifacts.</div>
+  <p>Station 1 now accepts .txt / .md / .docx / paste, proposes answers, and waits for Agree / Disagree / Edit before anything is written into Phase 1.</p>
+</div></div>
 </body>
 </html>
