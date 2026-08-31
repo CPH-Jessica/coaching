@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>The Reverse Planner — TIP Student Tool</title>
 <meta name="robots" content="noindex, nofollow">
-<meta name="description" content="Unlisted student tool. Six chapters, no outline — interrogate the draft and hand the packet to the CPH planner.">
+<meta name="description" content="Unlisted student tool. Dump a stalled draft, review extracted answers, lock Phase 1, hand the packet to the CPH planner.">
 <style>
   :root { --ink:#231f1c; --paper:#faf6f0; --card:#fffdf9; --line:#e6d9c8; --red:#8f1d22; --red-dk:#6e1519; --gold:#b08d57; --soft:#6b645a; --green:#3e7a5e; --ok:#e4f0ea; --warn:#fbeaea; --jess:#eef2f8; --code:#221f1e; --navy:#1c2430; }
   * { box-sizing:border-box; margin:0; padding:0; }
@@ -19,13 +19,14 @@
   nav.st { position:sticky; top:12px; background:var(--card); border:1px solid var(--line); border-radius:14px; padding:12px 8px; }
   nav.st h2 { font-family:"Segoe UI",sans-serif; font-size:10px; letter-spacing:.14em; text-transform:uppercase; color:var(--soft); margin:2px 8px 8px; }
   .sbtn { display:flex; gap:8px; width:100%; text-align:left; border:0; background:transparent; color:var(--ink); padding:8px 10px; border-radius:8px; cursor:pointer; font:14px/1.3 Georgia,serif; }
-  .sbtn .n { font-family:"Segoe UI",sans-serif; font-size:11px; color:var(--gold); min-width:18px; }
+  .sbtn .n { font-family:"Segoe UI",sans-serif; font-size:11px; color:var(--gold); min-width:22px; }
   .sbtn.on { background:var(--red-dk); color:#fff; }
   .sbtn.on .n { color:#e8c98a; }
   main.panel { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:22px 22px 16px; min-height:640px; }
   .station { display:none; }
   .station.on { display:block; }
   h3 { font-size:22px; color:var(--red-dk); font-weight:normal; font-style:italic; margin:0 0 8px; }
+  h4 { font-size:16px; margin:8px 0; }
   .why { margin:0 0 16px; color:var(--ink); max-width:68ch; }
   .q { margin:0 0 16px; padding-bottom:14px; border-bottom:1px solid var(--line); }
   .q:last-of-type { border-bottom:0; }
@@ -56,6 +57,8 @@
   .btn { border:0; border-radius:999px; padding:9px 16px; cursor:pointer; font-family:"Segoe UI",sans-serif; font-weight:700; font-size:13.5px; }
   .btn.ghost { background:#fff; color:var(--ink); border:1px solid var(--line); }
   .btn.gold { background:var(--red-dk); color:#fff; }
+  .btn.softgold { background:var(--gold); color:#1c1a19; }
+  .btn:disabled { opacity:.45; cursor:not-allowed; }
   aside.snap { position:sticky; top:12px; background:var(--navy); color:#f3ece2; border-radius:14px; padding:16px; }
   aside.snap h2 { font-style:italic; font-weight:normal; font-size:20px; margin:0 0 2px; color:#fff; }
   aside.snap .sub { font-family:"Segoe UI",sans-serif; font-size:11px; color:#c9b8a4; margin-bottom:12px; }
@@ -73,265 +76,49 @@
   .bar { height:7px; background:#4a2a2a; border-radius:99px; overflow:hidden; margin-top:5px; max-width:240px; }
   .bar span { display:block; height:100%; width:0; background:var(--gold); }
   footer { text-align:center; color:#8a7f74; font-size:13px; padding:8px 16px 24px; font-family:"Segoe UI",sans-serif; }
-  @media (max-width:1040px) { .wrap { grid-template-columns:1fr; } nav.st, aside.snap { position:static; } .row2 { grid-template-columns:1fr; } }
-  @media print { nav.st, .navrow, .tools, .banner { display:none !important; } .wrap { display:block; } .station { display:block !important; } }
+  .drop { border:2px dashed var(--line); border-radius:12px; padding:22px 16px; text-align:center; background:#faf6f0; cursor:pointer; margin:0 0 12px; }
+  .drop.over { border-color:var(--gold); background:#fff8ec; }
+  .drop b { display:block; font-family:"Segoe UI",sans-serif; margin-bottom:4px; }
+  .drop input { display:none; }
+  .filechip { display:flex; align-items:center; gap:8px; border:1px solid var(--line); background:#fff; border-radius:10px; padding:8px 10px; margin:0 0 8px; font-family:"Segoe UI",sans-serif; font-size:13px; }
+  .filechip .meta { flex:1; min-width:0; }
+  .filechip .name { font-weight:700; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+  .filechip .wc { color:var(--soft); font-size:12px; }
+  .filechip select { width:auto; padding:4px 8px; font-size:12px; font-family:"Segoe UI",sans-serif; }
+  .filechip .x { border:0; background:transparent; color:var(--red); cursor:pointer; font-size:16px; padding:0 4px; }
+  .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:8px; margin:12px 0; }
+  .stat { background:#faf6f0; border:1px solid var(--line); border-radius:8px; padding:8px 10px; }
+  .stat b { display:block; font-family:"Segoe UI",sans-serif; font-size:18px; color:var(--red-dk); }
+  .stat span { font-family:"Segoe UI",sans-serif; font-size:11px; color:var(--soft); text-transform:uppercase; letter-spacing:.06em; }
+  .prop { border:1px solid var(--line); border-radius:10px; padding:12px; margin:0 0 10px; background:#fff; }
+  .prop.agreed { background:var(--ok); border-color:#b7d4c6; }
+  .prop.disagreed { opacity:.5; background:#f4f0ea; }
+  .prop-head { display:flex; justify-content:space-between; gap:8px; align-items:flex-start; margin-bottom:6px; }
+  .prop-q { font-family:"Segoe UI",sans-serif; font-weight:700; font-size:13.5px; }
+  .pill { font-family:"Segoe UI",sans-serif; font-size:10px; letter-spacing:.06em; text-transform:uppercase; border-radius:999px; padding:3px 8px; white-space:nowrap; }
+  .pill.high { background:var(--green); color:#fff; }
+  .pill.medium { background:var(--gold); color:#1c1a19; }
+  .pill.low { background:#c4b8a8; color:#1c1a19; }
+  .prop-ev { font-size:13px; color:var(--soft); font-style:italic; margin:6px 0 8px; }
+  .prop-acts { display:flex; flex-wrap:wrap; gap:6px; }
+  .prop textarea { min-height:64px; }
+  .filt { display:flex; gap:6px; flex-wrap:wrap; margin:0 0 12px; }
+  details.more { margin:14px 0; border:1px solid var(--line); border-radius:10px; padding:10px 12px; background:#faf6f0; }
+  details.more summary { cursor:pointer; font-family:"Segoe UI",sans-serif; font-weight:700; }
+  .actrow { display:flex; flex-wrap:wrap; gap:8px; margin:10px 0; }
+  @media (max-width:1040px) {
+    .wrap { grid-template-columns:1fr; }
+    nav.st, aside.snap { position:static; }
+    .row2, .stats { grid-template-columns:1fr 1fr; }
+  }
+  @media print {
+    nav.st, .navrow, .tools, .banner, .drop, .actrow { display:none !important; }
+    .wrap { display:block; }
+    .station { display:block !important; }
+  }
 </style>
 </head>
 <body>
-<header>
-  <div class="k">The Invisible Pen · Coaching Desk · Unlisted student tool</div>
-  <h1>The Reverse Planner — six chapters, no map</h1>
-  <p>You drafted first. Fine. These pages are evidence, not a contract. Answer the stations. Do not write new prose. The packet at the end is what you hand the CPH planner so it can start at Phase 1 instead of guessing.</p>
-  <div class="barwrap">Packet completeness<div class="bar"><span id="bar"></span></div></div>
-</header>
-<div class="banner">Do not outline from chapter 7. Do not ask a model to “just keep going.” That is how a stalled book becomes a longer stalled book.</div>
-<div class="wrap">
-  <nav class="st" id="nav"></nav>
-  <main class="panel">
-    <section class="station on" data-step="0">
-      <h3>0 · Ground rules</h3>
-      <p class="why">You are not starting over. You are mining what you already wrote. Sunk cost is not a plot device. If a chapter does not earn its pages, it becomes a note.</p>
-      <div class="ok"><b>What this desk does:</b> extracts the book hiding in the six chapters, locks the five core elements + story promise, and builds a handoff packet for the CPH Fiction Planner.</div>
-      <div class="warn"><b>What it does not do:</b> outline forward until we know whether chapter 6 is even the right chapter 6.</div>
-      <div class="phase"><b>Phase 1</b><span>Planning — genre, tropes (3–5), hook, stakes, emotional core, story promise</span></div>
-      <div class="phase"><b>Phase 2</b><span>Premise — 1–2 marketable paragraphs from the locked elements</span></div>
-      <div class="phase"><b>Phase 3</b><span>Codex — characters, setting, rules, continuity</span></div>
-      <div class="phase"><b>Phase 4</b><span>Outline — chapter-by-chapter with escalation</span></div>
-      <div class="phase"><b>Phase 5</b><span>Plot-hole check, then one short prompt per chapter</span></div>
-      <div class="row2">
-        <div class="q"><span class="ql">Your name</span><input type="text" data-k="author" placeholder="Your name"></div>
-        <div class="q">
-          <span class="ql">Which pen does this belong to?</span>
-          <select data-k="pen">
-            <option value="">Select</option>
-            <option>Marge Moore — dark MC</option>
-            <option>Lia Soroka — paranormal</option>
-            <option>Pen 3 — parked / not named yet</option>
-            <option>Another pen / I do not know yet</option>
-          </select>
-        </div>
-      </div>
-      <div class="q">
-        <span class="ql">Today’s honest sentence</span>
-        <p class="hint">Finish this: “The reason I have not finished this book is…” One sentence. No performance.</p>
-        <textarea data-k="honestSentence" placeholder="…I do not know what the book is actually about."></textarea>
-      </div>
-    </section>
-    <section class="station" data-step="1">
-      <h3>1 · First contact</h3>
-      <p class="why">Lock the container before you argue about the contents.</p>
-      <div class="q"><span class="ql">Working title</span><p class="hint">Untitled is a valid answer.</p><input type="text" data-k="title" placeholder="Working title or Untitled"></div>
-      <div class="row2">
-        <div class="q"><span class="ql">Genre + subgenre</span><p class="hint">Not “romance.” The actual shelf.</p><input type="text" data-k="genre" placeholder="e.g. dark MC second-chance romance"></div>
-        <div class="q">
-          <span class="ql">Heat level</span>
-          <select data-k="heat">
-            <option value="">Select</option>
-            <option>1 — closed door / longing only</option>
-            <option>2 — kisses, fade to black</option>
-            <option>3 — open door, not graphic</option>
-            <option>4 — explicit, emotional</option>
-            <option>5 — explicit, intense, unapologetic</option>
-            <option>N/A — not a romance</option>
-          </select>
-        </div>
-      </div>
-      <div class="row2">
-        <div class="q">
-          <span class="ql">Book shape</span>
-          <select data-k="shape">
-            <option value="">Select</option>
-            <option>Standalone</option>
-            <option>Series starter (Book 1)</option>
-            <option>Later book in an existing series</option>
-            <option>I thought it was standalone. It might not be.</option>
-          </select>
-        </div>
-        <div class="q">
-          <span class="ql">Target length</span>
-          <select data-k="length">
-            <option value="">Select</option>
-            <option>Novella · 20–40k</option>
-            <option>Category / shorter novel · 50–70k</option>
-            <option>Standard novel · 80–100k</option>
-            <option>Long novel · 100k+</option>
-            <option>I have no idea and that is part of the problem</option>
-          </select>
-        </div>
-      </div>
-      <div class="q"><span class="ql">Who is the reader?</span><p class="hint">One sentence. What does she want to feel at 11pm?</p><textarea data-k="reader"></textarea></div>
-      <div class="row2">
-        <div class="q"><span class="ql">How long has this been sitting?</span><input type="text" data-k="age" placeholder="e.g. 3 years, opened twice since"></div>
-        <div class="q">
-          <span class="ql">Do you still want THIS book?</span>
-          <select data-k="stillWant">
-            <option value="">Select</option>
-            <option>Yes. This exact book. It just has no map.</option>
-            <option>I want the book these chapters were trying to become.</option>
-            <option>I want the characters. The plot can burn.</option>
-            <option>I am not sure I want it. That is why I am here.</option>
-          </select>
-        </div>
-      </div>
-    </section>
-    <section class="station" data-step="2">
-      <h3>2 · Mine the six chapters</h3>
-      <p class="why">What is actually on the pages — not what you meant to write three years ago.</p>
-      <div class="row2">
-        <div class="q"><span class="ql">Protagonist on page 1</span><p class="hint">Name + one line. Who they are when we meet them, not who they become.</p><textarea data-k="protag"></textarea></div>
-        <div class="q"><span class="ql">What do they WANT on page 1?</span><p class="hint">External. Visible. “Peace” is not a want.</p><textarea data-k="want"></textarea></div>
-      </div>
-      <div class="q"><span class="ql">What do they actually NEED?</span><p class="hint">If you do not know, write that. Need is usually the opposite of the armor.</p><textarea data-k="need"></textarea></div>
-      <div class="row2">
-        <div class="q"><span class="ql">Love interest / second lead</span><p class="hint">Name, when they enter, the friction — not the aesthetic.</p><textarea data-k="li"></textarea></div>
-        <div class="q"><span class="ql">Opposing force</span><p class="hint">Person, system, clock, or self. If the only opposition is “feelings,” you have a mood, not a plot.</p><textarea data-k="oppose"></textarea></div>
-      </div>
-      <div class="row2">
-        <div class="q">
-          <span class="ql">Inciting incident</span>
-          <p class="hint">The event that makes the old life impossible. Point at the chapter or admit it has not happened.</p>
-          <select data-k="inciting">
-            <option value="">Select</option>
-            <option>Chapter 1</option><option>Chapter 2</option><option>Chapter 3</option>
-            <option>Chapter 4</option><option>Chapter 5</option><option>Chapter 6</option>
-            <option>It has not happened yet</option>
-            <option>I think it happened but I cannot point to the page</option>
-          </select>
-        </div>
-        <div class="q"><span class="ql">By the end of chapter 6, what cannot be undone?</span><p class="hint">If the answer is “she’s in a different room,” that is not change.</p><textarea data-k="changed"></textarea></div>
-      </div>
-      <div class="row2">
-        <div class="q"><span class="ql">The scene that still has a pulse</span><textarea data-k="pulse"></textarea></div>
-        <div class="q"><span class="ql">The scene you suspect is stalling</span><textarea data-k="stall"></textarea></div>
-      </div>
-      <div class="q"><span class="ql">The question you have been dodging</span><p class="hint">Right size: “Why would she stay after he lies in chapter 4?” Wrong size: “How do they end up together?”</p><textarea data-k="dodging"></textarea></div>
-      <div class="q">
-        <span class="ql">Chapter inventory</span>
-        <p class="hint">One sentence each. Keep = earns its pages. Salvage = a moment lives, the chapter dies. Cut = useful only as a note.</p>
-        <div id="chapters"></div>
-      </div>
-    </section>
-    <section class="station" data-step="3">
-      <h3>3 · The honest stop</h3>
-      <p class="why">The planner cannot fix a motivation problem and a premise problem with the same tool.</p>
-      <div class="q"><span class="ql">Why did you stop? Check every one that is true.</span><div class="choices" id="stopReasons"></div></div>
-      <div class="q"><span class="ql">What did you hope would happen that didn’t?</span><textarea data-k="hoped"></textarea></div>
-      <div class="q"><span class="ql">If you could keep only three things from these six chapters, what are they?</span><p class="hint">A voice. A kiss. A setting. A line. A secret. Be ruthless.</p><textarea data-k="keepThree"></textarea></div>
-    </section>
-    <section class="station" data-step="4">
-      <h3>4 · Five core elements</h3>
-      <p class="why">This is Phase 1. If the draft and the element disagree, the element wins and the draft gets revised.</p>
-      <div class="q"><span class="ql">1. Genre lock</span><p class="hint">The version you would put on a product page. One line.</p><input type="text" data-k="genreLock"></div>
-      <div class="q"><span class="ql">2. Tropes — three to five. Not six.</span><p class="hint">Muddy promise = muddy blurb = muddy reader trust.</p><textarea data-k="tropes"></textarea></div>
-      <div class="q"><span class="ql">3. Hook / concept</span><p class="hint">Why THIS book, not the other twelve on the same shelf.</p><textarea data-k="hook"></textarea></div>
-      <div class="q"><span class="ql">4. Stakes</span><p class="hint">What breaks if they fail. “They won’t get together” is not stakes. What does the getting-together cost?</p><textarea data-k="stakes"></textarea></div>
-      <div class="q"><span class="ql">5. Emotional core</span><p class="hint">What should the reader feel in the last ten pages, and why does that feeling matter?</p><textarea data-k="core"></textarea></div>
-    </section>
-    <section class="station" data-step="5">
-      <h3>5 · Story promise</h3>
-      <p class="why">Read it out loud. The blank that makes you wince is the one you have not decided.</p>
-      <div class="row2">
-        <div class="q"><span class="ql">This is a ______ about</span><input type="text" data-k="p1" placeholder="dark MC second-chance romance"></div>
-        <div class="q"><span class="ql">______ who are forced to</span><input type="text" data-k="p2" placeholder="who the story is about"></div>
-      </div>
-      <div class="row2">
-        <div class="q"><span class="ql">forced to ______</span><input type="text" data-k="p3" placeholder="the situation they cannot walk away from"></div>
-        <div class="q"><span class="ql">while hiding ______</span><input type="text" data-k="p4" placeholder="the secret or wound"></div>
-      </div>
-      <div class="q"><span class="ql">leading to ______</span><input type="text" data-k="p5" placeholder="the choice / crisis / HEA shape"></div>
-      <div class="ok" id="promiseBox">This is a — about — who are forced to — while hiding —, leading to —.</div>
-    </section>
-    <section class="station" data-step="6">
-      <h3>6 · Character bones</h3>
-      <p class="why">Wound creates the lie. The lie creates the fear. The fear shapes the desire. The desire obscures the need. If those five do not connect, the character is a costume.</p>
-      <h4 style="margin:6px 0 10px">Protagonist</h4>
-      <div class="row2">
-        <div class="q"><span class="ql">Wound</span><p class="hint">The specific event or pattern. Not “had a hard childhood.”</p><textarea data-k="fWound"></textarea></div>
-        <div class="q"><span class="ql">The lie they believe</span><p class="hint">A sentence they would think, never say at dinner.</p><textarea data-k="fLie"></textarea></div>
-      </div>
-      <div class="row2">
-        <div class="q"><span class="ql">Fear</span><textarea data-k="fFear"></textarea></div>
-        <div class="q"><span class="ql">Desire they chase</span><textarea data-k="fDesire"></textarea></div>
-      </div>
-      <div class="row2">
-        <div class="q"><span class="ql">Need (what would actually heal them)</span><textarea data-k="fNeed"></textarea></div>
-        <div class="q"><span class="ql">External goal in THIS book</span><textarea data-k="fGoal"></textarea></div>
-      </div>
-      <h4 style="margin:16px 0 10px">Second lead / love interest</h4>
-      <div class="row2">
-        <div class="q"><span class="ql">Wound</span><textarea data-k="mWound"></textarea></div>
-        <div class="q"><span class="ql">The lie they believe</span><textarea data-k="mLie"></textarea></div>
-      </div>
-      <div class="row2">
-        <div class="q"><span class="ql">Fear</span><textarea data-k="mFear"></textarea></div>
-        <div class="q"><span class="ql">Desire they chase</span><textarea data-k="mDesire"></textarea></div>
-      </div>
-      <div class="row2">
-        <div class="q"><span class="ql">Need</span><textarea data-k="mNeed"></textarea></div>
-        <div class="q"><span class="ql">External goal in THIS book</span><textarea data-k="mGoal"></textarea></div>
-      </div>
-      <div class="q"><span class="ql">How their wounds collide</span><p class="hint">One sentence. Each person’s armor scrapes the other’s wound raw.</p><textarea data-k="collide"></textarea></div>
-    </section>
-    <section class="station" data-step="7">
-      <h3>7 · Structural honesty</h3>
-      <p class="why">Six chapters is usually a baggy Act 1. Sometimes it is three openings and a meet-cute. Rarely you already blew past midpoint — that is why it feels stuck.</p>
-      <div class="q">
-        <span class="ql">Where does chapter 6 actually sit?</span>
-        <select data-k="beatSit">
-          <option value="">Select</option>
-          <option>Still in the ordinary world. The old life is intact.</option>
-          <option>Inciting incident just landed. The old life cracked.</option>
-          <option>Doorway into Act 2. She cannot go back.</option>
-          <option>Mid-Act 2 / rising friction. New world, no midpoint yet.</option>
-          <option>Midpoint already happened. A truth is out or a plan reversed.</option>
-          <option>I have six versions of an opening and no book yet.</option>
-          <option>I genuinely cannot tell.</option>
-        </select>
-      </div>
-      <div class="q">
-        <span class="ql">The decision</span>
-        <p class="hint">Pick one. You can change it after the planner sees the packet. You cannot refuse to pick.</p>
-        <select data-k="decision">
-          <option value="">Select</option>
-          <option>Keep the six chapters as Act 1. Outline forward from them.</option>
-          <option>Keep the bones and voice. Rewrite the six to match a new outline.</option>
-          <option>Salvage two or three scenes. Treat the rest as discovery notes.</option>
-          <option>I need the planner to recommend after it reads this packet.</option>
-        </select>
-      </div>
-      <div class="diag" id="diagnosis"><h4>Editor’s read</h4><p>Answer Stations 1–7. The diagnosis writes itself here.</p></div>
-    </section>
-    <section class="station" data-step="8">
-      <h3>8 · Planner handoff</h3>
-      <p class="why">Copy the packet. Open a new chat. Paste it. Then paste the locked prompt underneath. Do not start drafting chapter 7.</p>
-      <div class="warn" id="phaseWarn"><b>Phase 1 is incomplete.</b> Fill genre lock, tropes, hook, stakes, core, and the story-promise blanks before you hand this to a planner. An empty packet produces a guess.</div>
-      <div class="jess"><b>Locked prompt — paste this after the packet:</b><br>
-        Run the CPH Fiction Planner starting at Phase 1 using this packet. Do not draft prose. Do not skip to an outline. First lock or challenge my five core elements and story promise. Then tell me which of my six chapters survive as Act 1, which get compressed, and which become salvage. After I approve Phase 1, move to premise.</div>
-      <pre class="packet" id="packet">Fill the earlier stations. The packet builds live.</pre>
-    </section>
-    <div class="navrow">
-      <button class="btn ghost" id="prev">Back</button>
-      <button class="btn gold" id="next">Next station</button>
-    </div>
-  </main>
-  <aside class="snap">
-    <h2>Live snapshot</h2>
-    <div class="sub">The book, not the pages. Saves in this browser only.</div>
-    <div class="sb"><h3>Title / pen</h3><p id="sTitle" class="empty">Untitled</p></div>
-    <div class="sb"><h3>Genre / heat</h3><p id="sGenre" class="empty">Not locked</p></div>
-    <div class="sb"><h3>Protagonist</h3><p id="sProtag" class="empty">Unknown</p></div>
-    <div class="sb"><h3>Change by Ch. 6</h3><p id="sChange" class="empty">Not named</p></div>
-    <div class="sb"><h3>Promise</h3><p id="sPromise" class="empty">Waiting on Station 5</p></div>
-    <div class="sb"><h3>Decision</h3><p id="sDec" class="empty">Not yet</p></div>
-    <div class="tools">
-      <button class="btn" id="copyBtn">Copy packet</button>
-      <button class="btn soft" id="copyPrompt">Copy planner prompt</button>
-      <button class="btn soft" id="dlBtn">Download .md</button>
-      <button class="btn soft" id="resetBtn">Reset this desk</button>
-    </div>
-  </aside>
-</div>
-<footer>The Reverse Planner · TIP / CPH Story Clinic · Answers stay in this browser. Download before you switch machines.</footer>
-<script src="reverse-planner.js"></script>
+PLACEHOLDER_BODY
 </body>
 </html>
